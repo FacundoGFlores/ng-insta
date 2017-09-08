@@ -6,7 +6,7 @@ import { Subject } from 'rxjs/Subject';
 
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
     this.keyword$
       .debounceTime(500) // wait 500ms to send the request
       .distinctUntilChanged() // after waiting 500ms if the keyword no change, no send
-      .flatMap((keyword: string) => this.searchService.search(keyword))
+      .switchMap((keyword: string) => this.searchService.search(keyword))
       .subscribe((data: Array<Post>) => this.data = data);
   }
 }
