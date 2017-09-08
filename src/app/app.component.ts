@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SearchService } from './app.service';
 import { Post } from './post.model';
 
 import { Subject } from 'rxjs/Subject';
+
+import 'rxjs/add/operator/debounceTime';
 
 @Component({
   selector: 'app-root',
@@ -23,17 +25,22 @@ import { Subject } from 'rxjs/Subject';
   `,
   styles: []
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   data: Array<Post> = [];
 
   // This variable is used to be output and input from the event
   keyword$ = new Subject();
 
-  constructor(private searchService: SearchService) {
-    this.keyword$.subscribe(keyword => this.search(keyword))
+  constructor(private searchService: SearchService) { }
+
+  ngOnInit() {
+    this.keyword$
+      .debounceTime(500)
+      .subscribe(keyword => this.search(keyword));
   }
 
   search(keyword): void {
-    this.searchService.search(keyword).subscribe(data => this.data = data);
+    this.searchService.search(keyword)
+      .subscribe(data => this.data = data);
   }
 }
