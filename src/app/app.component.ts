@@ -6,6 +6,7 @@ import { Subject } from 'rxjs/Subject';
 
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/operator/mergeMap';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,7 @@ export class AppComponent implements OnInit {
   data: Array<Post> = [];
 
   // This variable is used to be output and input from the event
-  keyword$ = new Subject();
+  keyword$ = new Subject<string>();
 
   constructor(private searchService: SearchService) { }
 
@@ -38,11 +39,7 @@ export class AppComponent implements OnInit {
     this.keyword$
       .debounceTime(500) // wait 500ms to send the request
       .distinctUntilChanged() // after waiting 500ms if the keyword no change, no send
-      .subscribe(keyword => this.search(keyword));
-  }
-
-  search(keyword): void {
-    this.searchService.search(keyword)
-      .subscribe(data => this.data = data);
+      .flatMap((keyword: string) => this.searchService.search(keyword))
+      .subscribe((data: Array<Post>) => this.data = data);
   }
 }
