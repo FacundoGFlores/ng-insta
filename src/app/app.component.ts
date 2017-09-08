@@ -5,6 +5,7 @@ import { Post } from './post.model';
 import { Subject } from 'rxjs/Subject';
 
 import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
 
 @Component({
   selector: 'app-root',
@@ -35,7 +36,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.keyword$
-      .debounceTime(500)
+      .debounceTime(500) // wait 500ms to send the request
+      .distinctUntilChanged() // after waiting 500ms if the keyword no change, no send
       .subscribe(keyword => this.search(keyword));
   }
 
